@@ -7,21 +7,22 @@ import {
 } from "react";
 import Modal from "./Modal";
 import useLoginModal from "../hooks/modalHooks/useLoginModal";
-import ModalHeader from "../components/ModalHeader";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import axios from "axios";
-import { UserContext } from "../context/UserProvider";
 import useSignUpModal from "../hooks/modalHooks/useSignupModal";
+import Input from "../components/Input";
+import ModalHeader from "../components/ModalHeader";
+import { UserContext } from "../context/UserProvider";
+import axios from "axios";
+import Button from "../components/Button";
 
-const LoginModal = () => {
-	const { setConnectedUser } = useContext(UserContext);
+const SignupModal = () => {
 	const loginModal = useLoginModal();
 	const signUpModal = useSignUpModal();
 	const [email, setEmail] = useState<string>("");
+	const [name, setName] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<string>("");
+	const { setConnectedUser } = useContext(UserContext);
 
 	useEffect(() => {
 		if (errorMessage) {
@@ -32,8 +33,8 @@ const LoginModal = () => {
 	}, [errorMessage]);
 
 	const toggleModal = useCallback(() => {
-		loginModal.onClose();
-		signUpModal.onOpen();
+		signUpModal.onClose();
+		loginModal.onOpen();
 	}, [loginModal, signUpModal]);
 
 	const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -42,17 +43,18 @@ const LoginModal = () => {
 		setIsLoading(true);
 
 		try {
-			if (!email || !password) {
+			if (!email || !password || !name) {
 				return setErrorMessage("All fields are required.");
 			}
 
 			const userInfo = {
+				name: name,
 				email: email,
 				password: password,
 			};
 
 			const result = await axios.post(
-				`${import.meta.env.VITE_BACKEND_LOCAL_URL}/auth/login`,
+				`${import.meta.env.VITE_BACKEND_LOCAL_URL}/auth/signup`,
 				userInfo
 			);
 
@@ -70,7 +72,7 @@ const LoginModal = () => {
 				});
 			}
 			setIsLoading(false);
-			loginModal.onClose();
+			signUpModal.onClose();
 		} catch (error) {
 			//@ts-ignore
 			if (error && error.response.data && !error.response.data.success) {
@@ -85,8 +87,8 @@ const LoginModal = () => {
 	let bodyContent: ReactElement = (
 		<div className="px-4 w-full">
 			<ModalHeader
-				title="Log in"
-				subHeader="Welcome back! Log into your account to proceed"
+				title="Sign up"
+				subHeader="Welcome to the family! Create an account to proceed"
 			/>
 			{errorMessage && (
 				<p className="text-center text-red-500 font-normal ">
@@ -94,6 +96,15 @@ const LoginModal = () => {
 				</p>
 			)}
 			<form className="flex flex-col space-y-5" onSubmit={handleSubmit}>
+				<Input
+					value={name}
+					handleChange={(e) => setName(e.target.value)}
+					type="text"
+					label="Full name"
+					placeHolder="Enter your full name"
+					name="name"
+					disabled={isLoading ? true : false}
+				/>
 				<Input
 					value={email}
 					handleChange={(e) => setEmail(e.target.value)}
@@ -130,15 +141,15 @@ const LoginModal = () => {
 				className="text-orange-500 font-medium"
 				onClick={toggleModal}
 			>
-				Don't have an account? Click here
+				Already have an account? Click here
 			</button>
 		</div>
 	);
 	return (
 		<>
 			<Modal
-				isOpen={loginModal.isOpen}
-				onClose={loginModal.onClose}
+				isOpen={signUpModal.isOpen}
+				onClose={signUpModal.onClose}
 				body={bodyContent}
 				footer={footerContent}
 				className="translate mx-auto overflow-y-scroll h-full max-h-[70%] lg:h-auto md:h-auto md:min-h-[440px] border-0 rounded-t-[20px] md:rounded-[20px] shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none lg:max-w-[484px]"
@@ -147,4 +158,4 @@ const LoginModal = () => {
 	);
 };
 
-export default LoginModal;
+export default SignupModal;

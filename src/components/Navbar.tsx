@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Logo from "../assets/logo/main-logo.svg";
 import { FiAlignJustify, FiX } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 import Button from "./Button";
 import useLoginModal from "../hooks/modalHooks/useLoginModal";
+import { UserContext } from "../context/UserProvider";
+import ConnectedMenu from "./ConnectedMenu";
+import useSignUpModal from "../hooks/modalHooks/useSignupModal";
 
 const Navbar = () => {
+	const { connectedUser } = useContext(UserContext);
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const loginModal = useLoginModal();
+	const signUpModal = useSignUpModal();
 	const toggle = () => setIsMenuOpen((prevState) => !prevState);
 
 	return (
@@ -62,12 +67,23 @@ const Navbar = () => {
 				</div>
 
 				<div className="hidden lg:flex items-center space-x-5">
-					<Button
-						btnText="Log in"
-						outline={true}
-						handleClick={loginModal.onOpen}
-					/>
-					<Button btnText="Sign up" />
+					{connectedUser ? (
+						<ConnectedMenu connectedUser={connectedUser} />
+					) : (
+						<>
+							<Button
+								btnText="Log in"
+								outline={true}
+								handleClick={loginModal.onOpen}
+								type="button"
+							/>
+							<Button
+								btnText="Sign up"
+								type="button"
+								handleClick={signUpModal.onOpen}
+							/>
+						</>
+					)}
 				</div>
 			</div>
 		</div>
