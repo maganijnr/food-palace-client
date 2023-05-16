@@ -7,6 +7,7 @@ import useLoginModal from "../hooks/modalHooks/useLoginModal";
 import { UserContext } from "../context/UserProvider";
 import ConnectedMenu from "./ConnectedMenu";
 import useSignUpModal from "../hooks/modalHooks/useSignupModal";
+import MobileMenu from "./MobileMenu";
 
 const Navbar = () => {
 	const { connectedUser } = useContext(UserContext);
@@ -85,6 +86,8 @@ const Navbar = () => {
 						</>
 					)}
 				</div>
+
+				{isMenuOpen && <MobileMenu toggle={toggle} />}
 			</div>
 		</div>
 	);
