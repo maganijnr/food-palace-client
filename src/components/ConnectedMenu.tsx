@@ -2,6 +2,7 @@ import { FC, useState, useContext } from "react";
 import { UserProps } from "../types/userTypes";
 import { FiAlignJustify, FiX } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
+import { IoCloudUploadOutline } from "react-icons/io5";
 import { BiLogIn } from "react-icons/bi";
 import axios from "axios";
 import { UserContext } from "../context/UserProvider";
@@ -14,7 +15,7 @@ const ConnectedMenu: FC<Props> = ({ connectedUser }) => {
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const { setConnectedUser } = useContext(UserContext);
 
-	const { avatar, name } = connectedUser;
+	const { avatar, name, role } = connectedUser;
 
 	async function logOutUser() {
 		try {
@@ -58,6 +59,12 @@ const ConnectedMenu: FC<Props> = ({ connectedUser }) => {
 						<CgProfile className="mr-2" />
 						Profile
 					</button>
+					{role === "ADMIN" && (
+						<button className="w-full py-1 text-left flex items-center text-black font-medium">
+							<IoCloudUploadOutline className="mr-2" />
+							Upload meal
+						</button>
+					)}
 					<button
 						className="w-full py-1 text-left flex items-center text-red-700 font-medium"
 						onClick={logOutUser}
